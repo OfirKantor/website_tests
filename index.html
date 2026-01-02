@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Cloudflare Workers & Pages Test</title>
+  <style>
+    body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial; max-width: 720px; margin: 2rem auto; padding: 1rem; }
+    #output { margin-bottom: 1rem; font-weight: 600; }
+    button { padding: .5rem 1rem; font-size: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Cloudflare Workers & Pages — Test</h1>
+  <div id="output">Press the button to get the current time + greeting.</div>
+  <button id="btn">Get time + greeting</button>
+
+  <script type="module">
+    import { getTimeWithGreeting } from './functions/time.js';
+
+    const btn = document.getElementById('btn');
+    const out = document.getElementById('output');
+
+    btn.addEventListener('click', () => {
+      out.textContent = getTimeWithGreeting();
+    });
+  </script>
+</body>
+</html>
