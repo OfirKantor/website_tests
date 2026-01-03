@@ -1,29 +1,373 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Cloudflare Workers & Pages Test</title>
-  <style>
-    body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial; max-width: 720px; margin: 2rem auto; padding: 1rem; }
-    #output { margin-bottom: 1rem; font-weight: 600; }
-    button { padding: .5rem 1rem; font-size: 1rem; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OFKASITE - ברוכים הבאים לעולם של כיף!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary-color: #6a11cb; /* סגול חיים */
+            --secondary-color: #2575fc; /* כחול בהיר */
+            --accent-color: #ffde00; /* צהוב בוהק */
+            --text-color: #333;
+            --light-text-color: #f0f0f0;
+            --background-color: #f7f9fc;
+            --card-background: #ffffff;
+            --border-radius: 12px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(45deg, var(--background-color), #e2eaf7);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        header h1 {
+            font-size: 3.2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.3em;
+            color: var(--secondary-color);
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        .cta-section {
+            margin-bottom: 50px;
+        }
+
+        .cta-section p {
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 25px;
+            justify-content: center;
+        }
+
+        .fun-button {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--light-text-color);
+            border: none;
+            padding: 20px 25px;
+            border-radius: var(--border-radius);
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fun-button:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .fun-button:active {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .fun-button svg {
+            width: 38px;
+            height: 38px;
+            stroke-width: 2.5;
+            color: var(--accent-color);
+            transition: transform 0.3s ease;
+        }
+
+        .fun-button:hover svg {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        footer {
+            margin-top: 50px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        /* Modals and notifications */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--card-background);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            max-width: 400px;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-content h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .modal-content button {
+            background-color: var(--secondary-color);
+            color: var(--light-text-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 1em;
+            transition: background-color 0.2s ease;
+        }
+        .modal-content button:hover {
+            background-color: var(--primary-color);
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: var(--light-text-color);
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            z-index: 1001;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .notification.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.5em;
+            }
+            header p {
+                font-size: 1.1em;
+            }
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+            .button-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>Cloudflare Workers & Pages — Test</h1>
-  <div id="output">Press the button to get the current time + greeting.</div>
-  <button id="btn">Get time + greeting</button>
+    <div class="container">
+        <header>
+            <h1>ברוכים הבאים ל-OFKASITE!</h1>
+            <p>הגעתם למקום שבו כיף וטכנולוגיה נפגשים. בואו נתחיל לשחק!</p>
+        </header>
 
-  <script type="module">
-    import { getTimeWithGreeting } from './functions/time.js';
+        <section class="cta-section">
+            <p>מוכנים לחוות דברים קצת... שונים?</p>
+            <div class="button-grid">
+                <button class="fun-button" data-action="surprise">
+                    <i data-lucide="sparkles"></i>
+                    הפתעה!
+                </button>
+                <button class="fun-button" data-action="toggle-color">
+                    <i data-lucide="palette"></i>
+                    שנה צבע
+                </button>
+                <button class="fun-button" data-action="riddle">
+                    <i data-lucide="help-circle"></i>
+                    חידה קטנה
+                </button>
+                <button class="fun-button" data-action="joke">
+                    <i data-lucide="laugh"></i>
+                    בדיחת היום
+                </button>
+                <button class="fun-button" data-action="magic">
+                    <i data-lucide="wand-sparkles"></i>
+                    קצת קסם
+                </button>
+                <button class="fun-button" data-action="confetti">
+                    <i data-lucide="party-popper"></i>
+                    מסיבה!
+                </button>
+            </div>
+        </section>
 
-    const btn = document.getElementById('btn');
-    const out = document.getElementById('output');
+        <footer>
+            <p>&copy; 2026 OFKASITE. כל הזכויות שמורות - וגם הכיף!</p>
+        </footer>
+    </div>
 
-    btn.addEventListener('click', () => {
-      out.textContent = getTimeWithGreeting();
-    });
-  </script>
+    <div class="modal-overlay" id="myModal">
+        <div class="modal-content">
+            <h3 id="modalTitle"></h3>
+            <p id="modalMessage"></p>
+            <button id="closeModal">סגור</button>
+        </div>
+    </div>
+
+    <div class="notification" id="myNotification">
+        <p id="notificationMessage"></p>
+    </div>
+
+    <script>
+        lucide.createIcons(); // Initialize Lucide icons
+
+        const funButtons = document.querySelectorAll('.fun-button');
+        const modalOverlay = document.getElementById('myModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const closeModalBtn = document.getElementById('closeModal');
+        const notification = document.getElementById('myNotification');
+        const notificationMessage = document.getElementById('notificationMessage');
+        const body = document.body;
+
+        const originalPrimary = getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+        const originalSecondary = getComputedStyle(document.documentElement).getPropertyValue('--secondary-color');
+
+        const getRandomColor = () => '#' + Math.floor(Math.random()*16777215).toString(16);
+
+        const showNotification = (message) => {
+            notificationMessage.textContent = message;
+            notification.classList.add('active');
+            setTimeout(() => {
+                notification.classList.remove('active');
+            }, 3000);
+        };
+
+        const showModal = (title, message) => {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            modalOverlay.classList.add('active');
+        };
+
+        const hideModal = () => {
+            modalOverlay.classList.remove('active');
+        };
+
+        closeModalBtn.addEventListener('click', hideModal);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) hideModal();
+        });
+
+        funButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const action = button.dataset.action;
+                switch (action) {
+                    case 'surprise':
+                        showNotification('בום! זו הייתה הפתעה!');
+                        break;
+                    case 'toggle-color':
+                        const newPrimary = getRandomColor();
+                        const newSecondary = getRandomColor();
+                        document.documentElement.style.setProperty('--primary-color', newPrimary);
+                        document.documentElement.style.setProperty('--secondary-color', newSecondary);
+                        showNotification('צבעים חדשים! (אולי...)');
+                        break;
+                    case 'riddle':
+                        showModal('חידה בשבילך', 'מה עולה למעלה אבל אף פעם לא יורד למטה? (רמז: זה לא כסף)');
+                        break;
+                    case 'joke':
+                        showModal('בדיחת היום', 'למה שוטרים באים עם גרביים? כי יש להם רגליים יחפות!');
+                        break;
+                    case 'magic':
+                        const magicMessage = ['אברה קדברה!', 'הוקוס פוקוס!', 'וושששש!', 'עלם סלם!'][Math.floor(Math.random() * 4)];
+                        showNotification(magicMessage);
+                        break;
+                    case 'confetti':
+                        // Simple confetti effect (can be replaced with a library)
+                        for (let i = 0; i < 50; i++) {
+                            const flake = document.createElement('div');
+                            flake.style.cssText = `
+                                position: fixed;
+                                top: ${Math.random() * 100}vh;
+                                left: ${Math.random() * 100}vw;
+                                width: ${Math.random() * 10 + 5}px;
+                                height: ${Math.random() * 10 + 5}px;
+                                background-color: ${getRandomColor()};
+                                opacity: ${Math.random()};
+                                border-radius: 50%;
+                                transform: rotate(${Math.random() * 360}deg);
+                                animation: fall ${Math.random() * 3 + 2}s linear forwards;
+                                z-index: 999;
+                            `;
+                            body.appendChild(flake);
+                            setTimeout(() => flake.remove(), 5000);
+                        }
+                        showNotification('מסיבה!');
+                        break;
+                }
+            });
+        });
+
+        // Keyframe for confetti
+        const styleSheet = document.createElement("style");
+        styleSheet.type = "text/css";
+        styleSheet.innerText = `
+            @keyframes fall {
+                0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+                100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(styleSheet);
+    </script>
 </body>
 </html>
